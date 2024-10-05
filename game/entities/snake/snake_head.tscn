@@ -1,0 +1,33 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://addons/first_party/components/movement/movement_2d.gd" type="Script" id=1]
+[ext_resource path="res://addons/first_party/components/movement/direction/wasd_direction_calculator_2d.gd" type="Script" id=2]
+[ext_resource path="res://game/entities/snake/snake_head.gd" type="Script" id=3]
+[ext_resource path="res://addons/first_party/assets/basic_2d_assets/polygons/square/square_filled.png" type="Texture" id=4]
+[ext_resource path="res://addons/first_party/components/movement/speed/speed_calculator.gd" type="Script" id=5]
+[ext_resource path="res://game/entities/snake/snake_segment.tscn" type="PackedScene" id=6]
+
+[node name="SNAKE" type="Node2D"]
+script = ExtResource( 3 )
+segment_scene = ExtResource( 6 )
+
+[node name="head_sprite" type="Sprite" parent="."]
+self_modulate = Color( 0.298039, 0.92549, 0.188235, 1 )
+texture = ExtResource( 4 )
+
+[node name="segments_parent" type="Node2D" parent="."]
+
+[node name="movement" type="Node" parent="."]
+script = ExtResource( 1 )
+enabled = false
+target_path = NodePath("..")
+speed_calculator_path = NodePath("speed")
+direction_calculator_path = NodePath("wasd")
+
+[node name="speed" type="Node" parent="movement"]
+script = ExtResource( 5 )
+top_speed = 500.0
+
+[node name="wasd" type="Node" parent="movement"]
+script = ExtResource( 2 )
+maintain_last_direction = true
