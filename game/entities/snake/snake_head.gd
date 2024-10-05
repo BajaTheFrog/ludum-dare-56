@@ -15,6 +15,8 @@ func _ready():
 	place_at_tile_position(tile_position)
 	target_tile_position = _get_random_tile_position()
 	connect("completed_move", self, "_on_completed_move")
+	add_to_group(Game.groups.roots.snake)
+	Game.world_service.connect_snake_signals(self)
 
 
 func _process(delta):
@@ -45,7 +47,7 @@ func _input(event):
 		
 func move():
 	should_move = false
-	next_direction = _get_next_direction()
+	next_direction = _get_a_star_next_direction()
 	var next_tile_position = tile_position + next_direction
 	move_to_tile_position(next_tile_position, speed)
 	move_segments()
@@ -69,9 +71,14 @@ func move_segments():
 	
 func _on_completed_move(old_tile_position: Vector2, new_tile_position: Vector2) -> void:
 	should_move = true
-	pass
 	
-	
+
+func _get_a_star_next_direction():
+	var route_to_target = Game.world_service.calculate_route_between_points(tile_position, target_tile_position)
+	if route_to_target.empty():
+		return current_direction
+	return route_to_target[0] - tile_position
+
 func _get_next_direction(allow_random_direction: bool = false) -> Vector2:
 	# only try to change 50% of the time
 	if allow_random_direction and Random.roll_chance(50):

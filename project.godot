@@ -89,6 +89,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/first_party/components/movement/direction/direction_calculator_2d.gd"
 }, {
+"base": "GameService",
+"class": "EntityService",
+"language": "GDScript",
+"path": "res://game/services/entity_service.gd"
+}, {
 "base": "Reference",
 "class": "Event",
 "language": "GDScript",
@@ -244,11 +249,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://game/services/pause_service.gd"
 }, {
-"base": "GameService",
-"class": "PlayerService",
-"language": "GDScript",
-"path": "res://game/services/entity_service.gd"
-}, {
 "base": "BaseTweenTransformFeedback2D",
 "class": "PositionFeedback2D",
 "language": "GDScript",
@@ -288,6 +288,11 @@ _global_script_classes=[ {
 "class": "ScreenService",
 "language": "GDScript",
 "path": "res://game/services/screen_service.gd"
+}, {
+"base": "AStar2D",
+"class": "SnakeAStar",
+"language": "GDScript",
+"path": "res://game/utilities/snake_astar.gd"
 }, {
 "base": "SnakeSegment",
 "class": "SnakeHead",
@@ -441,6 +446,7 @@ _global_script_class_icons={
 "CounterSequencer": "",
 "DictionaryEvent": "",
 "DirectionCalculator2D": "",
+"EntityService": "",
 "Event": "",
 "EventBusService": "",
 "EventSubscription": "",
@@ -472,7 +478,6 @@ _global_script_class_icons={
 "Movement2D": "",
 "Normalizer": "",
 "PauseService": "",
-"PlayerService": "",
 "PositionFeedback2D": "",
 "QueueFreeFeedback": "",
 "Random": "",
@@ -481,6 +486,7 @@ _global_script_class_icons={
 "RotateFeedback2D": "",
 "ScaleFeedback2D": "",
 "ScreenService": "",
+"SnakeAStar": "",
 "SnakeHead": "",
 "SnakeSegment": "",
 "SoundService": "",

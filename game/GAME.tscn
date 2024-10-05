@@ -51,7 +51,7 @@ script = ExtResource( 8 )
 [node name="world_service" type="Node" parent="services"]
 script = ExtResource( 2 )
 
-[node name="player_service" type="Node" parent="services"]
+[node name="entity_service" type="Node" parent="services"]
 script = ExtResource( 6 )
 
 [node name="ui_service" type="Node" parent="services"]

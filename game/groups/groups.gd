@@ -18,6 +18,7 @@ class Types:
 class Roots:
 	const player_character = "group.root.player_character"
 	const enemy = "group.root.enemy"
+	const snake = "group.root.snake"
 #	const bullet = "group.root.bullet"
 #	const pickup = "group.root.pickup"
 	
