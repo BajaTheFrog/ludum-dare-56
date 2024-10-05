@@ -9,8 +9,8 @@ var a_star = AStar2D.new()
 
 func initialize_a_star() -> void:
 	var i = 0
-	for x in range(0,WIDTH):
-		for y in range(0, HEIGHT):
+	for y in range(0, HEIGHT):
+		for x in range(0,WIDTH):
 			a_star.add_point(i, Vector2(x, y))
 			i += 1
 	var max_idx = i
@@ -21,11 +21,12 @@ func initialize_a_star() -> void:
 			a_star.connect_points(j, j+WIDTH)
 	for p in a_star.get_points():
 		var connected_points = a_star.get_point_connections(p)
-		print_debug(str(p) + " is connected to " + str(connected_points))
+#		print_debug(str(p) + " is connected to " + str(connected_points))
 	# Add walls
-	var walls = [11, 24, 38, 48, 58]
+	var walls = [11, 24, 37, 47, 57]
 	for w in walls:
 		remove_point(w)
+		
 	return
 
 func on_game_initialize() -> void:
@@ -33,6 +34,15 @@ func on_game_initialize() -> void:
 
 func connect_snake_signals(snake_head: SnakeHead) -> void:
 	snake_head.connect("completed_move", self, "_on_snake_completed_move")
+	
+	for p in a_star.get_points():
+		var point_label = Label.new()
+		point_label.text = str(p)
+		var p_tile_position = a_star.get_point_position(p)
+		var p_global_position = get_global_tile_position(p_tile_position)
+		point_label.set_global_position(p_global_position)
+		get_tree().root.add_child(point_label)
+		
 
 func remove_point(idx: int) -> void:
 	var connected_points = a_star.get_point_connections(idx)
