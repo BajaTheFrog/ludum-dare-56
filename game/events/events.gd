@@ -5,6 +5,7 @@ onready var application: ApplicationEvents = ApplicationEvents.new()
 onready var settings: SettingsEvents = SettingsEvents.new()
 onready var player: PlayerEvents = PlayerEvents.new()
 onready var enemies: EnemyEvents = EnemyEvents.new()
+onready var snake: SnakeEvents = SnakeEvents.new()
 onready var game_round: RoundEvents = RoundEvents.new()
 onready var game_theme: GameThemeEvents = GameThemeEvents.new()
 
@@ -31,11 +32,12 @@ class EnemyEvents:
 	# signal enemy_died()
 	pass
 
+class SnakeEvents:
+	signal target_captured()
+	
 
 class RoundEvents:
-	# signal round_begin()
-	# signal round_end()
-	pass
+	signal new_target_placed(target_tile_position)
 	
 	
 class GameThemeEvents:

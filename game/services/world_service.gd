@@ -59,6 +59,25 @@ func get_global_tile_position(tile_position: Vector2) -> Vector2:
 	var half_cell = cell_size / 2
 	local_tile_position += half_cell
 	return world_tile_map.to_global(local_tile_position)
+	
+	
+func place_object_at_tile_position(node_to_place: Node2D, tile_position: Vector2) -> void:
+	var new_global_position = get_global_tile_position(tile_position)
+	node_to_place.global_position = new_global_position
+	
+	
+func get_random_tile_position() -> Vector2:
+	var random_index = Random.randi_range(0, a_star.get_points().size() - 1)
+	var random_point = a_star.get_points()[random_index]
+	var random_tile_position = a_star.get_point_position(random_point)
+	
+	return random_tile_position
+	
+	
+func get_random_tile_position_as_global() -> Vector2:
+	var tile_position = get_random_tile_position()
+	return get_global_tile_position(tile_position)
+	
 
 func _on_snake_completed_move(prev_pos, cur_pos) -> void:
 	add_snake_to_astar()

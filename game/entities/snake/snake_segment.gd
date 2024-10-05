@@ -19,5 +19,4 @@ func move_to_tile_position(p_tile_position: Vector2, tween_speed: float) -> void
 
 func place_at_tile_position(give_tile_position: Vector2) -> void:
 	tile_position = give_tile_position
-	var tile_global_position = Game.world_service.get_global_tile_position(tile_position)
-	self.global_position = tile_global_position
+	Game.world_service.place_object_at_tile_position(self, tile_position)
