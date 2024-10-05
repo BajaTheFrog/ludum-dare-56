@@ -73,11 +73,30 @@ func _on_completed_move(old_tile_position: Vector2, new_tile_position: Vector2) 
 	should_move = true
 	
 
+func _get_backup_direction():
+	if current_direction == Vector2.UP and tile_position.y == 0 or current_direction == Vector2.DOWN and tile_position.y == 5:
+		if tile_position.x == 0:
+			return Vector2.RIGHT
+		else:
+			return Vector2.LEFT
+	if current_direction == Vector2.LEFT and tile_position.x == 0 or current_direction == Vector2.RIGHT and tile_position.y == 9:
+		if tile_position.y == 0:
+			return Vector2.DOWN
+		else:
+			return Vector2.UP
+	return current_direction
+
+
 func _get_a_star_next_direction():
 	var route_to_target = Game.world_service.calculate_route_between_points(tile_position, target_tile_position)
 	if route_to_target.empty():
-		return current_direction
-	return route_to_target[0] - tile_position
+		return _get_backup_direction()
+	if route_to_target[0] == tile_position:
+		route_to_target.remove(0)
+	if route_to_target.empty():
+		return _get_backup_direction()
+	var dir = route_to_target[0] - tile_position
+	return dir
 
 func _get_next_direction(allow_random_direction: bool = false) -> Vector2:
 	# only try to change 50% of the time

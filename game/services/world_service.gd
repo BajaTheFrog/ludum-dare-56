@@ -68,16 +68,19 @@ func add_snake_to_astar() -> void:
 		a_star.set_point_disabled(a, false)
 	var snake_poses = Game.entity_service.get_snake_positions()
 	for p in snake_poses:
-		a_star.set_point_disabled(a_star.get_closest_point(p, true))
+		a_star.set_point_disabled(tile_pos_to_idx(p))
 	if snake_poses.size() == 1:
 		var from_spot = (-1 * Game.entity_service.get_snake_direction()) + snake_poses[0]
-		a_star.set_point_disabled(a_star.get_closest_point(from_spot, true))
+		a_star.set_point_disabled(tile_pos_to_idx(from_spot))
 		
 func calculate_route_between_points(from: Vector2, to: Vector2) -> PoolVector2Array:
-	var from_id = a_star.get_closest_point(from)
-	var to_id = a_star.get_closest_point(to)
-	return a_star.get_point_path(from_id, to_id)
+	var from_id = tile_pos_to_idx(from)
+	var to_id = tile_pos_to_idx(to)
+	var route =  a_star.get_point_path(from_id, to_id)
+	return route
 
+func tile_pos_to_idx(p: Vector2) -> int:
+	return p.y * WIDTH + p.x
 
 #func destroy_all_enemies() -> void:
 #	var enemies = get_tree().get_nodes_in_group(Game.groups.roots.enemy)
