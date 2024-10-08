@@ -1,4 +1,4 @@
-name: Godot Web Export
+name: Build and Deploy
 on: push
 
 env:
@@ -63,6 +63,40 @@ jobs:
           cache-from: type=registry,ref=davesilva/ludum-dare-56:${{ github.event.before }}
           cache-to: type=inline
 
+  deploy-beta:
+    name: Deploy to Beta Environment
+    if: github.ref == 'refs/heads/beta'
+    needs:
+      - export-web
+      - build-server-docker-image
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download web build
+        uses: actions/download-artifact@v4
+        with:
+          name: web
+      - name: Unzip web build
+        run: |
+          unzip build.zip
+          rm build.zip
+          ls
+      - name: Copy web build to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ld56.dmsilva.com
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "*"
+          target: /var/www/html/beta
+      - name: Update game server build
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ld56.dmsilva.com
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo ${{ github.sha }} > /root/CURRENT_REV_BETA
+            ./docker-restart-beta.sh
 
   release:
     name: Release
