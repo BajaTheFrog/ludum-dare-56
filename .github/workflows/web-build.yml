@@ -37,6 +37,32 @@ jobs:
         with:
           name: web
           path: build.zip
+    
+  build-server-docker-image:
+    name: Build Server Docker Image
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: davesilva/ludum-dare-56:${{ github.sha }}
+          cache-from: type=registry,ref=davesilva/ludum-dare-56:${{ github.event.before }}
+          cache-to: type=inline
+
 
   release:
     name: Release
