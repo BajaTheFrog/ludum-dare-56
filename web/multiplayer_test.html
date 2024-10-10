@@ -1,0 +1,46 @@
+<html>
+  <body>
+    <iframe src="http://localhost:8080"></iframe>
+    <iframe src="http://localhost:8080"></iframe>
+    <iframe src="http://localhost:8080"></iframe>
+    <iframe src="http://localhost:8080"></iframe>
+    
+    <style> 
+      body {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 2px;
+        height: 100vh;
+        display: flex;
+        flex-wrap: wrap;
+        background-color: black;
+      }
+
+      iframe {
+        border: none;
+        width: 50%;
+        
+        &.focus {
+          outline: 2px solid white;
+          z-index: 1;
+        }
+      }
+    </style>
+    
+    <script>
+      window.onload = () => {
+        let lastFocus = null
+        setInterval(() => {
+          const activeFocus = document.activeElement
+          if (activeFocus instanceof HTMLIFrameElement && activeFocus != lastFocus) {
+            activeFocus.classList = ['focus']
+            if (lastFocus) {
+              lastFocus.classList = []
+            }
+            lastFocus = activeFocus
+          }
+        }, 100)
+      }
+    </script>
+  </body>
+</html>
