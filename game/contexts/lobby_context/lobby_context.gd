@@ -19,13 +19,17 @@ func _ready():
 		$Connect/Host.hide()
 		$Connect/URLLabel.hide()
 		$Connect/URL.hide()
-		
+
 		var host = JavaScript.eval("window.location.hostname")
 		var port = JavaScript.eval("new URLSearchParams(window.location.search).get('ws_port')")
 		if port == null:
 			port = str(Game.DEFAULT_PORT)
-		
-		$Connect/URL.text = "ws://" + host + ":" + port
+
+		var protocol = "ws"
+		if JavaScript.eval("window.location.protocol") == "https:":
+			protocol = "wss"
+
+		$Connect/URL.text = protocol + "://" + host + ":" + port
 
 
 

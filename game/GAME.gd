@@ -306,6 +306,8 @@ func join_game(url, new_player_name):
 	player_name = new_player_name
 	peer = WebSocketClient.new()
 	var error = peer.connect_to_url(url, PoolStringArray(), true)
+	if error != null:
+		emit_signal("game_error", "Failed to connect: " + error)
 	get_tree().set_network_peer(peer)
 
 
