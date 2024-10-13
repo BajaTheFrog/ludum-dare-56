@@ -100,7 +100,7 @@ func _on_player_picked_up_apple():
 		return 
 		
 	data.total_player_apples_acquired += 1 
-	data.meter += 10
+	data.meter += 2
 	broadcast_latest()
 	
 
