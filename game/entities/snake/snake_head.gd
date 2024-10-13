@@ -27,6 +27,7 @@ func _ready():
 	add_to_group(Game.groups.roots.snake)
 	Game.world_service.connect_snake_signals(self)
 	Game.events.game_round.connect("new_target_placed", self, "_on_new_target_placed")
+	Game.connect("player_ready", self, "_on_player_ready")
 
 
 func _process(delta):
@@ -284,3 +285,7 @@ puppetsync func _add_new_segment(segment_tile_position: Vector2) -> void:
 
 func _on_SNAKE_body_entered(body):
 	Game.events.snake.emit_signal("caught_player", body)
+
+func _on_player_ready(id):
+	if is_network_master():
+		rset_id(id, "hit_points", hit_points)

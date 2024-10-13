@@ -143,16 +143,16 @@ func _on_wave_sequencer_new_value(value):
 
 
 func _on_pickup_hotbox_area_entered(area):
-	if get_tree().is_network_server():
-		if area.is_in_group(Game.groups.hotboxes.pickup_apple):
+	if area.is_in_group(Game.groups.hotboxes.pickup_apple):
+		if get_tree().is_network_server():
 			Game.events.player.emit_signal("player_picked_up_apple")
-		elif area.is_in_group(Game.groups.hotboxes.speed_pad):
-			var speed_pad = TriggerZone.get_owner_from(area)
-			if speed_pad:
-				var pad_rotation = ((speed_pad) as Node2D).rotation_degrees
-				var pad_rad = deg2rad(pad_rotation)
-				var direction = Vector2.RIGHT.rotated(pad_rad)
-				_trigger_speed_boost(direction)
+	elif area.is_in_group(Game.groups.hotboxes.speed_pad):
+		var speed_pad = TriggerZone.get_owner_from(area)
+		if speed_pad:
+			var pad_rotation = ((speed_pad) as Node2D).rotation_degrees
+			var pad_rad = deg2rad(pad_rotation)
+			var direction = Vector2.RIGHT.rotated(pad_rad)
+			_trigger_speed_boost(direction)
 
 
 func _on_hurtbox_area_entered(area):
