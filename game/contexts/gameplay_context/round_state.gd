@@ -65,7 +65,7 @@ func _ready():
 	Game.events.snake.connect("snake_doomed", self, "_on_snake_doomed")
 	Game.events.snake.connect("snake_killed", self, "_on_snake_killed")
 	Game.events.player.connect("player_picked_up_apple", self, "_on_player_picked_up_apple")
-	Game.events.player.connect("player_died", self, "_on_player_died")
+	Game.events.player.connect("server_player_died", self, "_on_player_died")
 	
 	
 func _on_target_captured():
@@ -104,7 +104,7 @@ func _on_player_picked_up_apple():
 	broadcast_latest()
 	
 
-func _on_player_died():
+func _on_player_died(player):
 	if data.status != RoundStatus.IN_PROGRESS:
 		return 
 		

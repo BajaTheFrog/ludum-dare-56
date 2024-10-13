@@ -109,7 +109,7 @@ text = "0 BOMBS"
 align = 1
 valign = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="bomb_pips" type="HBoxContainer" parent="."]
 margin_left = -45.3333
 margin_top = 28.0
 margin_right = 44.6667
@@ -118,7 +118,7 @@ rect_min_size = Vector2( 90, 30 )
 custom_constants/separation = 15
 alignment = 1
 
-[node name="pip_1" type="TextureRect" parent="HBoxContainer"]
+[node name="pip_1" type="TextureRect" parent="bomb_pips"]
 self_modulate = Color( 0.603922, 1, 0.129412, 1 )
 margin_left = 35.0
 margin_right = 55.0
@@ -128,14 +128,14 @@ texture = ExtResource( 8 )
 expand = true
 stretch_mode = 5
 
-[node name="TextureRect" type="TextureRect" parent="HBoxContainer/pip_1"]
+[node name="TextureRect" type="TextureRect" parent="bomb_pips/pip_1"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 texture = ExtResource( 9 )
 expand = true
 stretch_mode = 5
 
-[node name="pip_2" type="TextureRect" parent="HBoxContainer"]
+[node name="pip_2" type="TextureRect" parent="bomb_pips"]
 visible = false
 self_modulate = Color( 0.603922, 1, 0.129412, 1 )
 margin_left = 52.0
@@ -146,14 +146,14 @@ texture = ExtResource( 8 )
 expand = true
 stretch_mode = 5
 
-[node name="TextureRect" type="TextureRect" parent="HBoxContainer/pip_2"]
+[node name="TextureRect" type="TextureRect" parent="bomb_pips/pip_2"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 texture = ExtResource( 9 )
 expand = true
 stretch_mode = 5
 
-[node name="pip_3" type="TextureRect" parent="HBoxContainer"]
+[node name="pip_3" type="TextureRect" parent="bomb_pips"]
 visible = false
 self_modulate = Color( 0.603922, 1, 0.129412, 1 )
 margin_left = 70.0
@@ -164,7 +164,7 @@ texture = ExtResource( 8 )
 expand = true
 stretch_mode = 5
 
-[node name="TextureRect" type="TextureRect" parent="HBoxContainer/pip_3"]
+[node name="TextureRect" type="TextureRect" parent="bomb_pips/pip_3"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 texture = ExtResource( 9 )

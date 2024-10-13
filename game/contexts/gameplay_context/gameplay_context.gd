@@ -5,12 +5,14 @@ const CONTEXT_ID = "context.gameplay"
 export (PackedScene) var snake_scene
 
 onready var apple = $apple
-onready var player_apples_label: Label = $CanvasLayer/Control/Control/VBoxContainer/player_apples_label
-onready var player_deaths_label: Label = $CanvasLayer/Control/Control/VBoxContainer/player_deaths_label
-onready var snake_apples_label: Label = $CanvasLayer/Control/Control/VBoxContainer/snake_apples_label
-onready var snake_deaths_label: Label = $CanvasLayer/Control/Control/VBoxContainer/snake_deaths_label
+onready var player_apples_label: Label = $CanvasLayer/Control/debug_labels/VBoxContainer/player_apples_label
+onready var player_deaths_label: Label = $CanvasLayer/Control/debug_labels/VBoxContainer/player_deaths_label
+onready var snake_apples_label: Label = $CanvasLayer/Control/debug_labels/VBoxContainer/snake_apples_label
+onready var snake_deaths_label: Label = $CanvasLayer/Control/debug_labels/VBoxContainer/snake_deaths_label
 onready var win_overlay: Control = $CanvasLayer/Control/win_overlay
 onready var lose_overlay: Control = $CanvasLayer/Control/lose_overlay
+onready var dead_overlay: Control = $CanvasLayer/Control/dead_overlay
+onready var respawn_timer_label: Control = $CanvasLayer/Control/dead_overlay/respawn_timer_label
 onready var meter: ProgressBar = $CanvasLayer/Control/top_control/match_progress
 
 puppetsync var puppet_apple_global_position = Vector2.ZERO
@@ -25,6 +27,9 @@ func _ready():
 	Game.events.snake.connect("snake_doomed", self, "_on_snake_doomed")
 	Game.events.snake.connect("snake_killed", self, "_on_snake_killed")
 	Game.events.player.connect("player_picked_up_apple", self, "_on_player_picked_up_apple")
+	Game.events.player.connect("client_active_player_died", self, "_on_active_player_died")
+	Game.events.player.connect("client_active_player_respawned", self, "_on_active_player_respawned")
+	Game.events.player.connect("client_active_player_respawn_time_remaining", self, "_on_update_respawn_timer")
 	Game.events.game_round.connect("new_round_state_data", self, "_on_new_round_state_data")
 	Game.connect("player_ready", self, "_on_player_ready")
 	Game.connect("player_disconnected", self, "_on_player_disconnected")
@@ -32,7 +37,7 @@ func _ready():
 	var player_sync_timer = Timer.new()
 	add_child(player_sync_timer)
 	player_sync_timer.wait_time = 1.0
-	player_sync_timer.connect("timeout", self, "_on_player_sync")
+	player_sync_timer.connect("timeout", self, "_on_check_connected_peers")
 	player_sync_timer.start()
 	
 	win_overlay.visible = false
@@ -69,6 +74,19 @@ func _on_player_picked_up_apple() -> void:
 	place_target()
 
 
+func _on_active_player_died():
+	respawn_timer_label.text = ""
+	dead_overlay.visible = true
+
+
+func _on_active_player_respawned():
+	dead_overlay.visible = false
+
+
+func _on_update_respawn_timer(time_remaining):
+	respawn_timer_label.text = str(ceil(time_remaining))
+
+
 func _on_player_ready(id) -> void:
 	if is_network_master():
 		rset_id(id, "puppet_apple_global_position", puppet_apple_global_position)
@@ -81,7 +99,7 @@ func _on_player_disconnected(id) -> void:
 			player_node.queue_free()
 
 
-func _on_player_sync():
+func _on_check_connected_peers():
 	var player_nodes = Game.world_service.players.get_children()
 	var peers = get_tree().get_network_connected_peers()
 	for player_node in player_nodes:
@@ -102,7 +120,8 @@ func _on_new_round_state_data(state_data: RoundState.RoundStateData) -> void:
 		RoundState.RoundStatus.MICE_WIN:
 			win_overlay.visible = true
 			lose_overlay.visible = false
-			get_tree().network_peer.disconnect_from_host()
+			if get_tree().network_peer.has_method("disconnect_from_host"):
+				get_tree().network_peer.disconnect_from_host()
 			get_tree().paused = true
 			var timer = Wait.on(get_tree().root, 5.0)
 			timer.pause_mode = PAUSE_MODE_PROCESS
@@ -111,7 +130,8 @@ func _on_new_round_state_data(state_data: RoundState.RoundStateData) -> void:
 		RoundState.RoundStatus.SNAKE_WIN:
 			win_overlay.visible = false
 			lose_overlay.visible = true
-			get_tree().network_peer.disconnect_from_host()
+			if get_tree().network_peer.has_method("disconnect_from_host"):
+				get_tree().network_peer.disconnect_from_host()
 			get_tree().paused = true
 			var timer = Wait.on(get_tree().root, 5.0)
 			timer.pause_mode = PAUSE_MODE_PROCESS

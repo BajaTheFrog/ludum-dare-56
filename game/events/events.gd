@@ -14,7 +14,13 @@ class ApplicationEvents:
 
 class PlayerEvents:
 	signal player_picked_up_apple()
-	signal player_died()
+	signal server_player_died(player)
+	signal client_player_died(player)
+	signal client_active_player_died()
+	signal server_player_respawned(player)
+	signal client_player_respawned(player)
+	signal client_active_player_respawned()
+	signal client_active_player_respawn_time_remaining()
 	
 
 class SnakeEvents:

@@ -18,7 +18,7 @@ func _on_pickup_hotbox_area_entered(area):
 			if player and player.bomb_count == 0:
 				rpc("remove_bomb")
 				player.rpc("_update_bomb_count", player.bomb_count+1)
-				print("picked up bomb")
+				print("Player " + player.get_name() + " picked up a bomb")
 
 func _on_player_picked_up_apple():
 	if is_network_master():

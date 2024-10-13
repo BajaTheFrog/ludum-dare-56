@@ -13,16 +13,20 @@ puppet var puppet_pos = Vector2()
 puppet var puppet_motion = Vector2()
 var spawn_point = Vector2()
 
+onready var mouse_texture: Texture = load("res://game/entities/player/mouse_02_body.PNG")
+onready var dead_texture: Texture = load("res://game/entities/player/dead.png")
 onready var hurtbox: TriggerZone = $hurtbox
 onready var casts: Node2D = $casts
 onready var wall_cast: RayCast2D = $casts/anchor/wall_cast
 onready var space_cast: Area2D = $casts/anchor/space_cast
-onready var pips: Array = [$HBoxContainer/pip_1, $HBoxContainer/pip_2, $HBoxContainer/pip_3]
+onready var pips: Array = [$bomb_pips/pip_1, $bomb_pips/pip_2, $bomb_pips/pip_3]
 
 var player_name = ""
 var speed_boost_direction = Vector2.ZERO
 var bomb_count = 0
 var time_burrowing = 0
+var dead = false
+var respawn_timer = 0
 
 func _ready():
 	puppet_pos = position
@@ -36,6 +40,14 @@ func _ready():
 
 func _physics_process(delta):
 	var motion = Vector2()
+
+	if dead:
+		respawn_timer -= delta
+		if respawn_timer < 0:
+			_respawn()
+		elif is_network_master():
+			Game.events.player.emit_signal("client_active_player_respawn_time_remaining", respawn_timer)
+		return
 
 	if is_network_master():
 		if Input.is_action_pressed("standard_move_left"):
@@ -87,19 +99,64 @@ func set_player_color(color: Color):
 
 func _have_been_caught(body):
 	if body == self:
-		_respawn()
-			
+		_kill()
+
+
+func _kill():
+	if get_tree().is_network_server():
+		Game.events.player.emit_signal("server_player_died", self)
+		rpc("_on_killed", 5)
+
+
+remotesync func _on_killed(time_to_respawn):
+	# Ensure the message was sent by the server
+	if get_tree().get_rpc_sender_id() == 1:
+		print("Player " + get_name() + " killed")
+		Game.events.player.emit_signal("client_player_died", self)
+		if is_network_master():
+			Game.events.player.emit_signal("client_active_player_died")
+		dead = true
+		respawn_timer = time_to_respawn
+		$body_sprite.texture = dead_texture
+		$wave_sequencer.enabled = false
+		$pickup_hotbox.set_deferred("monitorable", false)
+		$pickup_hotbox.set_deferred("monitoring", false)
+		$hurtbox.set_deferred("monitorable", false)
+		$hurtbox.set_deferred("monitoring", false)
+		$collision_shape.set_deferred("disabled", true)
+		$bomb_pips.visible = false
+
 
 func _respawn():
 	if get_tree().is_network_server():
-		Game.events.player.emit_signal("player_died")
-	if is_network_master():
-		position = spawn_point
-		rset("puppet_motion", Vector2())
-		rset("puppet_pos", position)
-		rpc("_update_bomb_count", 0)
-		
-		
+		Game.events.player.emit_signal("server_player_respawned", self)
+		rpc("_on_respawned", spawn_point)
+
+
+remotesync func _on_respawned(spawn_position):
+	# Ensure the message was sent by the server
+	if get_tree().get_rpc_sender_id() == 1:
+		print("Player " + get_name() + " respawned")
+		Game.events.player.emit_signal("client_player_respawned", self)
+		if is_network_master():
+			Game.events.player.emit_signal("client_active_player_respawned")
+		dead = false
+		respawn_timer = 0
+		position = spawn_position
+		speed_boost_direction = Vector2.ZERO
+		time_burrowing = 0
+		puppet_motion = Vector2()
+		puppet_pos = position
+		_update_bomb_count(0)
+		$body_sprite.texture = mouse_texture
+		$pickup_hotbox.set_deferred("monitorable", true)
+		$pickup_hotbox.set_deferred("monitoring", true)
+		$hurtbox.set_deferred("monitorable", true)
+		$hurtbox.set_deferred("monitoring", true)
+		$collision_shape.set_deferred("disabled", false)
+		$bomb_pips.visible = true
+
+
 func _burrow(delta: float):
 	$burrow_bar.visible = true
 	time_burrowing += delta
@@ -157,8 +214,8 @@ func _on_pickup_hotbox_area_entered(area):
 
 func _on_hurtbox_area_entered(area):
 	if area.is_in_group(Game.groups.hitboxes.explosion):
-		print("player killed by bomb")
-		_respawn()
+		print("Player " + get_name() + " killed by bomb")
+		_kill()
 		
 	
 func _trigger_speed_boost(direction: Vector2):

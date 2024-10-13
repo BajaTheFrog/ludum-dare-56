@@ -27,6 +27,7 @@ func _ready():
 	add_to_group(Game.groups.roots.snake)
 	Game.world_service.connect_snake_signals(self)
 	Game.events.game_round.connect("new_target_placed", self, "_on_new_target_placed")
+	Game.events.player.connect("server_player_died", self, "_on_player_died")
 	Game.connect("player_ready", self, "_on_player_ready")
 
 
@@ -198,6 +199,12 @@ func _on_clear_target_player():
 	target_player = null
 	rset("bloodlust", false)
 	print("Snake chilling out")
+
+
+func _on_player_died(player):
+	if target_player == player:
+		print("Snake target player " + target_player.get_name() + " died")
+		_on_clear_target_player()
 
 
 func _get_a_star_next_direction():
