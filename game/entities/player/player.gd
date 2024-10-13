@@ -31,7 +31,7 @@ func _ready():
 	hurtbox.add_to_group(Game.groups.hurtboxes.player)
 	$pickup_hotbox.add_to_group(Game.groups.hotboxes.player_pickups)
 	$name.text = player_name
-	_update_bomb_pips()
+	_update_bomb_count(0)
 
 
 func _physics_process(delta):
@@ -91,13 +91,13 @@ func _have_been_caught(body):
 			
 
 func _respawn():
+	if get_tree().is_network_server():
+		Game.events.player.emit_signal("player_died")
 	if is_network_master():
 		position = spawn_point
 		rset("puppet_motion", Vector2())
 		rset("puppet_pos", position)
-		bomb_count = 0
-		_update_bomb_pips()
-		Game.events.player.emit_signal("player_died")
+		rpc("_update_bomb_count", 0)
 		
 		
 func _burrow(delta: float):
@@ -121,19 +121,17 @@ func _no_burrow():
 			
 func _place_bomb():
 	rpc("_place_bomb_at_position", global_position)
-	bomb_count -= 1
-	bomb_count = clamp(bomb_count, 0, MAX_BOMB_COUNT)
-	_update_bomb_pips()
+	rpc("_update_bomb_count", bomb_count-1)
 	
 	
-func _update_bomb_pips():
-	var index = 0
-	for pip in pips:
+puppetsync func _update_bomb_count(count: int):
+	bomb_count = clamp(count, 0, MAX_BOMB_COUNT)
+	for index in pips.size():
+		var pip = pips[index]
 		pip.self_modulate = filled_pip_color if index < bomb_count else empty_pip_color
-		index += 1
 	
 	
-remotesync func _place_bomb_at_position(position: Vector2) -> void:
+puppetsync func _place_bomb_at_position(position: Vector2) -> void:
 	var bomb_instance = bomb_scene.instance()
 	var bomb_parent = Game.world_service.get_spawn_root()
 	bomb_parent.add_child(bomb_instance)
@@ -151,9 +149,7 @@ func _on_pickup_hotbox_area_entered(area):
 		var bomb_pickup = TriggerZone.get_owner_from(area) as BombPickup
 		if bomb_pickup:
 			bomb_pickup._get_picked_up()
-		bomb_count += 1
-		bomb_count = clamp(bomb_count, 0, MAX_BOMB_COUNT)
-		_update_bomb_pips()
+		rpc("_update_bomb_count", bomb_count+1)
 		print("picked up bomb")
 	elif area.is_in_group(Game.groups.hotboxes.speed_pad):
 		var speed_pad = TriggerZone.get_owner_from(area)
