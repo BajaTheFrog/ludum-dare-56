@@ -32,6 +32,9 @@ func _ready():
 	$pickup_hotbox.add_to_group(Game.groups.hotboxes.player_pickups)
 	$name.text = player_name
 	_update_bomb_pips()
+	
+	if is_network_master():
+		Game.camera_service.node_to_follow = self
 
 
 func _physics_process(delta):

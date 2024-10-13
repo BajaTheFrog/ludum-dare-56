@@ -3,6 +3,8 @@ class_name CameraService
 
 var is_shake_enabled: bool = true
 var active_camera: Camera2D
+var node_to_follow: Node2D
+var is_shaking: bool = false
 
 var shake_timer: Timer
 var tween: Tween
@@ -20,17 +22,16 @@ func _ready():
 	tween = Tween.new()
 	add_child(tween)
 	
-	set_process(false)
-	
 
-func _process(delta):
-	if get_tree().is_network_server():
-		return
-	
-	var random_x_shake = Random.randf_range(-shake_amount, shake_amount)
-	var random_y_shake = Random.randf_range(-shake_amount, shake_amount)
-	var random_shake = Vector2(random_x_shake, random_y_shake)
-	active_camera.offset = random_shake * delta + default_offset
+func on_game_process(delta):
+	if is_shaking:
+		var random_x_shake = Random.randf_range(-shake_amount, shake_amount)
+		var random_y_shake = Random.randf_range(-shake_amount, shake_amount)
+		var random_shake = Vector2(random_x_shake, random_y_shake)
+		active_camera.offset = random_shake * delta + default_offset
+		
+	if node_to_follow and active_camera:
+		active_camera.global_position = node_to_follow.global_position
 
 
 func set_active_camera(camera_2D: Camera2D) -> void:
@@ -62,13 +63,13 @@ func shake(new_shake: float, shake_time: float = 0.4, shake_limit: float = 100.0
 	shake_timer.wait_time = shake_time
 	
 	tween.stop_all()
-	set_process(true)
+	is_shaking = true
 	shake_timer.start()
 
 
 func _on_shake_timer_timeout():
 	shake_amount = 0
-	set_process(false)
+	is_shaking = false
 	
 	tween.interpolate_property(active_camera, "offset", active_camera.offset, default_offset,
 			0.1, Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
