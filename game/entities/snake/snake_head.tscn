@@ -79,6 +79,11 @@ percent_visible = false
 [node name="vision_cone" type="Area2D" parent="casts"]
 
 [node name="vision_cone_shape" type="CollisionPolygon2D" parent="casts/vision_cone"]
-polygon = PoolVector2Array( 0, 0, 160, -104, 160, 104 )
+polygon = PoolVector2Array( 0, 0, 256, -192, 256, 192 )
+
+[node name="vision_cast" type="RayCast2D" parent="casts"]
+
+[node name="bloodlust_timer" type="Timer" parent="."]
+one_shot = true
 
 [connection signal="body_entered" from="." to="." method="_on_SNAKE_body_entered"]

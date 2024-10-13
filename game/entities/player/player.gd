@@ -1,7 +1,7 @@
 extends KinematicBody2D
 class_name Player
 
-export (float) var time_to_burrow = 1
+export (float) var time_to_burrow = 0.5
 export (Color) var filled_pip_color
 export (Color) var empty_pip_color
 export (PackedScene) var bomb_scene
@@ -95,6 +95,10 @@ func set_player_name(name):
 
 func set_player_color(color: Color):
 	$body_sprite.self_modulate = color
+
+
+func get_player_color() -> Color:
+	return $body_sprite.self_modulate
 
 
 func _have_been_caught(body):

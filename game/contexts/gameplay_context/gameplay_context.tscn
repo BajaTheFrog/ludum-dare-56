@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://game/contexts/gameplay_context/gameplay_context.gd" type="Script" id=1]
 [ext_resource path="res://game/world/game_world.tscn" type="PackedScene" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://game/contexts/gameplay_context/round_state.gd" type="Script" id=5]
 [ext_resource path="res://addons/first_party/assets/fonts/boldstrom_d.otf" type="DynamicFontData" id=6]
 [ext_resource path="res://addons/first_party/assets/basic_2d_assets/polygons/square/square_filled.png" type="Texture" id=7]
+[ext_resource path="res://game/entities/player/mouse_02_body.PNG" type="Texture" id=8]
 
 [sub_resource type="StyleBoxFlat" id=2]
 bg_color = Color( 0.701961, 0.968627, 0.792157, 1 )
@@ -34,6 +35,12 @@ texture = ExtResource( 7 )
 [node name="GameWorld" parent="." instance=ExtResource( 2 )]
 
 [node name="SNAKE" parent="." instance=ExtResource( 3 )]
+target_player_last_seen_ghost_path = NodePath("../player_last_seen_position_ghost")
+
+[node name="player_last_seen_position_ghost" type="Sprite" parent="."]
+visible = false
+self_modulate = Color( 1, 1, 1, 0.129412 )
+texture = ExtResource( 8 )
 
 [node name="apple" parent="." instance=ExtResource( 4 )]
 
